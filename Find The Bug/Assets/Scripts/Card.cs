@@ -55,19 +55,19 @@ public class Card : MonoBehaviour, IPointerDownHandler
     */
     #endregion
 
-    [SerializeField] Transform graphics;
-    [SerializeField] Image face;
-    [SerializeField] GameObject[] cardSides;
-    public bool isBug = false;
-    public Vector2 gridPosition = new Vector2();
     public RectTransform rect;
+    [HideInInspector] public bool isBug = false;
+    [HideInInspector] public bool canFlip = true;
+    [HideInInspector] public Vector2 gridPosition = new Vector2();
+    Image graphics;
+    Sprite showCardSprite;
 
     private void Start()
     {
+        graphics = GetComponent<Image>();
         canFlip = true;
     }
 
-    [HideInInspector] public bool canFlip = true;
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -81,34 +81,41 @@ public class Card : MonoBehaviour, IPointerDownHandler
             //CONDIÇÃO DE VITÓRIA
             if (isBug)
             {
-                face.sprite = References.instance.cardSprites[0];
+                showCardSprite = References.instance.cardSprites[0];
                 References.instance.turnManager.OnFindBug();
             }
 
             //PROCURAR PELO BUG E INDICAR DIREÇÃO
             else
             {
-                face.sprite = References.instance.gridController.GetBugDirection(this);
+                showCardSprite = References.instance.gridController.GetBugDirection(this);
                 References.instance.soundController.PlayRegularCardSound();
             }
 
-            FlipShowCard();
+            FlipCard();
         }
     }
 
-    private void OnConpleteFlip()
+    private void FlipCard()
     {
-        cardSides[0].SetActive(!cardSides[0].activeSelf);
-        cardSides[1].SetActive(!cardSides[1].activeSelf);
+        transform.LeanRotateAroundLocal(Vector3.up, 180, .075f).
+            setEase(LeanTweenType.easeInOutBounce).setOnComplete(OnConpleteFlipCard);
     }
 
-    private void FlipShowCard()
+    private void OnConpleteFlipCard()
     {
-        graphics.LeanRotateAroundLocal(Vector3.up, 180, .075f).setOnComplete(OnConpleteFlip);
+        graphics.sprite = showCardSprite;
     }
 
-    public void FlipHideCard()
+    public void HideCard()
     {
-        graphics.LeanRotateAroundLocal(Vector3.up, -180, .075f).setOnComplete(OnConpleteFlip);
+        transform.LeanRotateAroundLocal(Vector3.up, -180, .075f).
+                setEase(LeanTweenType.easeInOutBounce).
+                setOnComplete((OnConpleteHideCard));
+    }
+    private void OnConpleteHideCard()
+    {
+        graphics.sprite = References.instance.cardSprites[9];
+        canFlip = true;
     }
 }

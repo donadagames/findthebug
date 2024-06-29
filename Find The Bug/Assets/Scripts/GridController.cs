@@ -1,17 +1,66 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridController : MonoBehaviour
 {
+    public int cardsQuantity = 55;
+
     [SerializeField] Transform gridParent;
-    [SerializeField] int cardsQuantity = 55;
     private List<Card> cards = new List<Card>();
     private Card bugCard;
-
+    public GridLayoutGroup layoutGroup;
     public void InstantiateCards()
     {
         var bugIndex = GetRandomIndexBug();
+        var cellSize = 0.0f;
+        var cellSpacing = 0.0f;
+
+        if (cardsQuantity <= 55)
+        {
+            cellSize = 100;
+            cellSpacing = 50;
+        }
+
+        else if (cardsQuantity > 55 && cardsQuantity <= 100)
+        {
+            cellSize = 85;
+            cellSpacing = Mathf.Sqrt((cardsQuantity / 3));
+        }
+
+        else if (cardsQuantity > 100 && cardsQuantity <= 200)
+        {
+            cellSize = 70;
+            cellSpacing = Mathf.Sqrt((cardsQuantity / 4));
+        }
+
+        else if (cardsQuantity > 200 && cardsQuantity <= 300)
+        {
+            cellSize = 60;
+            cellSpacing = Mathf.Sqrt((cardsQuantity / 5));
+        }
+
+        else if (cardsQuantity > 300 && cardsQuantity <= 400)
+        {
+            cellSize = 50;
+            cellSpacing = Mathf.Sqrt((cardsQuantity / 6));
+        }
+
+        else if (cardsQuantity > 400 && cardsQuantity <= 600)
+        {
+            cellSize = 35;
+            cellSpacing = Mathf.Sqrt((cardsQuantity / 7));
+        }
+
+        else
+        {
+            cellSize = 20;
+            cellSpacing = Mathf.Sqrt((cardsQuantity / 8));
+        }
+
+        layoutGroup.cellSize = new Vector2(cellSize, cellSize);
+        layoutGroup.spacing = new Vector2(cellSpacing, cellSpacing);
 
         for (int i = 0; i < cardsQuantity; i++)
         {
@@ -33,7 +82,7 @@ public class GridController : MonoBehaviour
         foreach (Card card in cards)
         {
             if (card.canFlip == false)
-                card.FlipHideCard();
+                card.HideCard();
 
             card.canFlip = true;
             card.isBug = false;
@@ -77,17 +126,16 @@ public class GridController : MonoBehaviour
     }
 
 
-
-    // SPRITES NA ORDEM: [0]BUG, [1]UP, [2]DOWN, [3]LEFT, [4]RIGHT, [5]UP-LEFT, [6]UP-RIGHT, [7]DOWN-LEFT, [8]DOWN-RIGHT
-    public Sprite GetBugDirection(Card _card)
+    // SPRITES NA ORDEM: [0]BUG, [1]UP, [2]DOWN, [3]LEFT, [4]RIGHT, [5]UP-LEFT, [6]UP-RIGHT, [7]DOWN-LEFT, [8]DOWN-RIGHT, [9]BACK-CARD
+    public Sprite GetBugDirection(Card card)
     {
         int spriteIndex;
 
         //BUG ESTÁ NA MESMA COLUNA
-        if (_card.gridPosition.y == bugCard.gridPosition.y)
+        if (card.gridPosition.y == bugCard.gridPosition.y)
         {
             //BUG ESTÁ ACIMA
-            if (_card.gridPosition.x > bugCard.gridPosition.x)
+            if (card.gridPosition.x > bugCard.gridPosition.x)
                 spriteIndex = 1;
 
             //BUG ESTÁ EMBAIXO
@@ -96,10 +144,10 @@ public class GridController : MonoBehaviour
         }
 
         //BUG ESTÁ NA MESMA LINHA
-        else if (_card.gridPosition.x == bugCard.gridPosition.x)
+        else if (card.gridPosition.x == bugCard.gridPosition.x)
         {
             //BUG ESTÁ À ESQUERDA
-            if (_card.gridPosition.y < bugCard.gridPosition.y)
+            if (card.gridPosition.y < bugCard.gridPosition.y)
                 spriteIndex = 3;
 
             //BUG ESTÁ À DIREITA
@@ -110,10 +158,10 @@ public class GridController : MonoBehaviour
         //BUG NÃO ESTÁ NA MESMA LINHA E NÃO ESTÁ NA MESMA COLUNA
         else
         {
-            if (_card.gridPosition.x > bugCard.gridPosition.x)
+            if (card.gridPosition.x > bugCard.gridPosition.x)
             {
                 //BUG ESTÁ ACIMA E À ESQUERDA
-                if (_card.gridPosition.y < bugCard.gridPosition.y)
+                if (card.gridPosition.y < bugCard.gridPosition.y)
                     spriteIndex = 5;
                 //BUG ESTÁ ACIMA E À DIREITA
                 else
@@ -123,7 +171,7 @@ public class GridController : MonoBehaviour
             else
             {
                 //BUG ESTÁ ABAIXO E À ESQUERDA
-                if (_card.gridPosition.y < bugCard.gridPosition.y)
+                if (card.gridPosition.y < bugCard.gridPosition.y)
                     spriteIndex = 7;
                 //BUG ESTÁ ACIMA E BUG À DIREITA
                 else

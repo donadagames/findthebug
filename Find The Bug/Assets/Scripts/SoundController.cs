@@ -11,11 +11,6 @@ public class SoundController : MonoBehaviour
         audioSource = GetComponent<AudioSource>();
     }
 
-    public void PlaySound(AudioClip clip)
-    {
-        audioSource.PlayOneShot(clip);
-    }
-
     public void PlayMusic()
     {
         audioSource.Play();
@@ -23,11 +18,11 @@ public class SoundController : MonoBehaviour
 
     public void PlayRegularCardSound()
     {
-        PlaySound(regularCardClip);
+        audioSource.PlayOneShot(regularCardClip);
     }
 
     public void PlayBugCardSound()
     {
-        PlaySound(bugCardClip);
+        audioSource.PlayOneShot(bugCardClip);
     }
 }

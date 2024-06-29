@@ -32,11 +32,11 @@ public class TurnManager : MonoBehaviour
         canPlay = false;
         References.instance.uiController.UpdateScoreText(points);
         References.instance.soundController.PlayBugCardSound();
-        StartCoroutine(OnGindBugCoroutine());
+        StartCoroutine(OnFindBugCoroutine());
 
     }
 
-    private IEnumerator OnGindBugCoroutine()
+    private IEnumerator OnFindBugCoroutine()
     {
         yield return new WaitForSeconds(.75f);
         References.instance.gridController.RefreshCards();
@@ -46,5 +46,6 @@ public class TurnManager : MonoBehaviour
     private void OnTimeEnds(object sender, TimerController.OnTimerCompletedEventHandler e)
     {
         canPlay = false;
+        References.instance.dataController.SendJsonDataFile(References.instance.dataController.GetJsonDataFile(points));
     }
 }
